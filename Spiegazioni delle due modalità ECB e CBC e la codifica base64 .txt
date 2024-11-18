@@ -1,0 +1,7 @@
+Modalità ECB e CBC
+ECB (Electronic Codebook) e CBC (Cipher Block Chaining) sono due modalità di funzionamento per algoritmi di cifratura a blocchi.  
+- ECB: Cifra ogni blocco di dati indipendentemente dagli altri. È semplice e veloce, ma meno sicuro, poiché blocchi uguali producono risultati cifrati uguali, esponendo schemi riconoscibili nei dati.  
+- CBC: Ogni blocco cifrato dipende dal blocco precedente, introducendo un vettore di inizializzazione (IV) per il primo blocco. Questo rende la cifratura più sicura, evitando pattern evidenti nei dati cifrati.  
+
+Codifica Base64  
+La codifica Base64 è una tecnica per rappresentare dati binari (come testo o file) in formato ASCII. Utilizza 64 caratteri (lettere, numeri, "+" e "/") per codificare i dati, con "=" come carattere di padding. È utile per trasmettere dati binari su canali che gestiscono solo testo (ad esempio, email o JSON).
