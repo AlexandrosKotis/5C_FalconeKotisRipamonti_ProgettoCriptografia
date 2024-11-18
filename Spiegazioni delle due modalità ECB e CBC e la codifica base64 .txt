@@ -1,7 +1,8 @@
-Modalità ECB e CBC
-ECB (Electronic Codebook) e CBC (Cipher Block Chaining) sono due modalità di funzionamento per algoritmi di cifratura a blocchi.  
-- ECB: Cifra ogni blocco di dati indipendentemente dagli altri. È semplice e veloce, ma meno sicuro, poiché blocchi uguali producono risultati cifrati uguali, esponendo schemi riconoscibili nei dati.  
-- CBC: Ogni blocco cifrato dipende dal blocco precedente, introducendo un vettore di inizializzazione (IV) per il primo blocco. Questo rende la cifratura più sicura, evitando pattern evidenti nei dati cifrati.  
+Le modalità di operazione ECB (Electronic Codebook) e CBC (Cipher Block Chaining) sono due modi per gestire lo scopo della cifratura simmetrica a blocchi. 
 
-Codifica Base64  
-La codifica Base64 è una tecnica per rappresentare dati binari (come testo o file) in formato ASCII. Utilizza 64 caratteri (lettere, numeri, "+" e "/") per codificare i dati, con "=" come carattere di padding. È utile per trasmettere dati binari su canali che gestiscono solo testo (ad esempio, email o JSON).
+- Modalità ECB (Electronic Codebook): in questa modalità, il blocco di testo in chiaro viene cifrato separatamente con la stessa chiave. È semplice e veloce, ma ha uno svantaggio: quando vengono forniti gli stessi blocchi di testo in chiaro, produrranno gli stessi blocchi di testo cifrato, quindi alcune informazioni possono essere dedotte dal testo cifrato.
+
+- CBC (Cipher Block Chaining): il blocco di testo in chiaro attuale viene prima XORato con il testo cifrato dell'ultimo blocco prima di essere cifrato. Il primo blocco utilizza un vettore di inizializzazione (IV) generato casualmente. Questa modalità affronta il problema dei blocchi identici che causano testi cifrati identici in ECB.
+
+La codifica Base64 è una tecnica per convertire le informazioni binarie in un formato di testo con un numero limitato di caratteri (64 caratteri). Viene utilizzata per codificare dati binari (come un file o un output cifrato) in un formato facilmente trasportabile tramite mezzi solo testuali come email o formato json. In termini di prestazioni, Base64 non è uno schema di cifratura, ma è solo uno schema di codifica.
+
