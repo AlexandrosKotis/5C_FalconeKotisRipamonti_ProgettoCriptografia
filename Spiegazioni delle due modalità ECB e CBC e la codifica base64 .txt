@@ -1,4 +1,4 @@
-Le modalità di operazione ECB (Electronic Codebook) e CBC (Cipher Block Chaining) sono due modi per gestire lo scopo della cifratura simmetrica a blocchi. 
+Le modalità di operazionei ECB (Electronic Codebook) e CBC (Cipher Block Chaining) sono due modi per gestire lo scopo della cifratura simmetrica a blocchi. 
 
 - Modalità ECB (Electronic Codebook): in questa modalità, il blocco di testo in chiaro viene cifrato separatamente con la stessa chiave. È semplice e veloce, ma ha uno svantaggio: quando vengono forniti gli stessi blocchi di testo in chiaro, produrranno gli stessi blocchi di testo cifrato, quindi alcune informazioni possono essere dedotte dal testo cifrato.
 
