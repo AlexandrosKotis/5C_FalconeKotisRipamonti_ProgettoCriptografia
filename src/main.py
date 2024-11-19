@@ -94,7 +94,7 @@ if __name__ == "__main__":
     key = os.urandom(16)  # Chiave AES a 128 bit
 
     # Testo con ripetizioni
-    with open("/home/trustypixel/Scuola/Sistemi/Laboratorio/Progetti/Progetto_Criptografia/5C_FalconeKotisRipamonti_ProgettoCriptografia/src/testo.txt", "r") as file:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "testo.txt"), "r") as file:
         data = "".join(file.readlines())
     data = bytes(data, "utf8")
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     text += "\n--------------------------------------\n"
 
-    file = open("/home/trustypixel/Scuola/Sistemi/Laboratorio/Progetti/Progetto_Criptografia/5C_FalconeKotisRipamonti_ProgettoCriptografia/src/scritto.txt", "w")
+    file = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scritto.txt"), "w")
     file.write(text)
     file.close()
 
