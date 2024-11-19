@@ -85,29 +85,46 @@ def from_base64(data):
 # Punto di ingresso del programma.
 # Genera una chiave AES casuale, cifra un messaggio in modalità ECB e CBC, 
 # e stampa i risultati in formato Base64.
+
+
+
+
+
 if __name__ == "__main__":
     key = os.urandom(16)  # Chiave AES a 128 bit
+
     # Testo con ripetizioni
-    plaintext = b"""Block 1, Block 1, Block 1. Encrypted data, encrypted data, encrypted data. Patterns repeat, patterns repeat, patterns repeat. Secure mode, secure mode, secure mode. Protect info, protect info, protect info."""  
+    with open("/home/trustypixel/Scuola/Sistemi/Laboratorio/Progetti/Progetto_Criptografia/5C_FalconeKotisRipamonti_ProgettoCriptografia/src/testo.txt", "r") as file:
+        data = "".join(file.readlines())
+    data = bytes(data, "utf8")
 
     # ECB
-    ciphertext_ecb = encrypt_ecb(key, plaintext)
-    print("ECB Base64:", to_base64(ciphertext_ecb))
+    text = "\n--------------------------------------\n"
+    ciphertext_ecb = encrypt_ecb(key, data)
+    text += "ECB Base64:" + to_base64(ciphertext_ecb)
 
-    print("\n")
+    text += "\n"
 
     # Decrittazione ECB
     decrypted_ecb = decrypt_ecb(key, ciphertext_ecb)
-    print("ECB Decifrato:", decrypted_ecb.decode())
+    text += "ECB Decifrato:" + decrypted_ecb.decode()
 
-    print("\n")
-    print("\n")
+    text += "\n--------------------------------------\n"
     
     # CBC
-    iv, ciphertext_cbc = encrypt_cbc(key, plaintext)
-    print("CBC Base64:", to_base64(iv + ciphertext_cbc))
+    iv, ciphertext_cbc = encrypt_cbc(key, data)
+    text += "CBC Base64:" + to_base64(iv + ciphertext_cbc)
 
-    print("\n")
+    text += "\n"
 
     decrypted_cbc = decrypt_cbc(key, iv, ciphertext_cbc)
-    print("CBC Decifrato:", decrypted_cbc.decode())
+    text += "CBC Decifrato:" + decrypted_cbc.decode()
+
+    text += "\n--------------------------------------\n"
+
+    file = open("/home/trustypixel/Scuola/Sistemi/Laboratorio/Progetti/Progetto_Criptografia/5C_FalconeKotisRipamonti_ProgettoCriptografia/src/scritto.txt", "w")
+    file.write(text)
+    file.close()
+
+    
+    
