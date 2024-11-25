@@ -1,130 +1,91 @@
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.padding import PKCS7
 from cryptography.hazmat.backends import default_backend
-import base64
 import os
+import itertools
 
-# Funzione per aggiungere padding al testo
-# Aggiunge padding al testo per garantire che la sua lunghezza sia un multiplo della dimensione del blocco (128 bit).
-# @param text (bytes) Il testo in chiaro da criptare.
-# @return (bytes) Testo in chiaro con il padding applicato.
-def add_padding(text):
-    padder = padding.PKCS7(128).padder()
-    return padder.update(text) + padder.finalize()
+#Apertura del file
+def read_file(file_path):
+    with open(file_path, 'r') as file:
+        return "".join(file.readlines())
 
-# Funzione per rimuovere il padding dal testo
-# Rimuove il padding da un testo precedentemente criptato e decifrato.
-# @param padded_text (bytes) Testo con padding da rimuovere.
-# @return (bytes) Testo senza padding.
-def remove_padding(padded_text):
-    unpadder = padding.PKCS7(128).unpadder()
-    return unpadder.update(padded_text) + unpadder.finalize()
 
-# Decrittazione AES con ECB
-# Decifra il testo cifrato utilizzando l'algoritmo AES in modalità ECB.
-# @param key (bytes) La chiave di decrittazione AES (16 byte per AES-128).
-# @param ciphertext (bytes) Il testo cifrato da decifrare.
-# @return (bytes) Testo in chiaro decifrato.
-def decrypt_ecb(key, ciphertext):
-    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
-    decryptor = cipher.decryptor()
-    padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-    return remove_padding(padded_plaintext)
+#Generazione della chiave
+def generate_key():
+    return os.urandom(16)
 
-# Decrittazione AES con CBC
-# Decifra il testo cifrato utilizzando l'algoritmo AES in modalità CBC.
-# @param key (bytes) La chiave di decrittazione AES (16 byte per AES-128).
-# @param iv (bytes) Il vettore di inizializzazione (16 byte).
-# @param ciphertext (bytes) Il testo cifrato da decifrare.
-# @return (bytes) Testo in chiaro decifrato.
-def decrypt_cbc(key, iv, ciphertext):
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-    decryptor = cipher.decryptor()
-    padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-    return remove_padding(padded_plaintext)
 
-# Criptazione AES con ECB
-# Cripta il testo in chiaro utilizzando l'algoritmo AES in modalità ECB.
-# @param key (bytes) La chiave di criptazione AES (16 byte per AES-128).
-# @param plaintext (bytes) Il testo in chiaro da criptare.
-# @return (bytes) Testo cifrato in modalità ECB.
-def encrypt_ecb(key, plaintext):
+#Criptografia ECB
+def encrypt_ecb(text, key):
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     encryptor = cipher.encryptor()
-    padded_plaintext = add_padding(plaintext)
-    return encryptor.update(padded_plaintext) + encryptor.finalize()
+    padder = PKCS7(algorithms.AES.block_size).padder()
+    padded_text = padder.update(text.encode()) + padder.finalize()
+    return encryptor.update(padded_text) + encryptor.finalize()
 
-# Criptazione AES con CBC
-# Cripta il testo in chiaro utilizzando l'algoritmo AES in modalità ECB.
-# @param key (bytes) La chiave di criptazione AES (16 byte per AES-128).
-# @param plaintext (bytes) Il testo in chiaro da criptare.
-# @return iv (bytes) Il vettore di inizializzazione (16 byte).
-# @return ciphertext (bytes) Il testo cifrato in modalità CBC.
-def encrypt_cbc(key, plaintext):
-    iv = os.urandom(16)  # Initialization vector casuale
+
+#Crittografia CBC
+def encrypt_cbc(text, key, iv):
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
-    padded_plaintext = add_padding(plaintext)
-    ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
-    return iv, ciphertext
-
-# Codifica Base64
-# Converte dati binari in formato Base64 per rappresentazione testuale.
-# @param data (bytes) Dati binari da convertire.
-# @return (str) Dati codificati in Base64 come stringa.
-def to_base64(data):
-    return base64.b64encode(data).decode()
-
-# Decodifica Base64
-# Decodifica dati Base64 in formato binario originale.
-# @param data (str) Stringa codificata in Base64.
-# @return (bytes) Dati binari originali.
-def from_base64(data):
-    return base64.b64decode(data)
-
-# Punto di ingresso del programma.
-# Genera una chiave AES casuale, cifra un messaggio in modalità ECB e CBC, 
-# e stampa i risultati in formato Base64.
+    padder = PKCS7(algorithms.AES.block_size).padder()
+    padded_text = padder.update(text.encode()) + padder.finalize()
+    return encryptor.update(padded_text) + encryptor.finalize()
 
 
+#Decrittazione con ECB
+def decrypt_ecb(ciphertext, key):
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
+    decryptor = cipher.decryptor()
+    unpadder = PKCS7(algorithms.AES.block_size).unpadder()
+    decrypted_padded = decryptor.update(ciphertext) + decryptor.finalize()
+    return unpadder.update(decrypted_padded) + unpadder.finalize()
 
 
+#Decrittazione con CBC
+def decrypt_cbc(ciphertext, key, iv):
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+    unpadder = PKCS7(algorithms.AES.block_size).unpadder()
+    decrypted_padded = decryptor.update(ciphertext) + decryptor.finalize()
+    return unpadder.update(decrypted_padded) + unpadder.finalize()
 
-if __name__ == "__main__":
-    key = os.urandom(16)  # Chiave AES a 128 bit
 
-    # Testo con ripetizioni
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "testo.txt"), "r") as file:
-        data = "".join(file.readlines())
-    data = bytes(data, "utf8")
+#Funzione per generare tutte le chiavi possibili di lunghezza n
+def generate_any_key(max_length):
+    alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    li = []
+    for i in itertools.product(alphabet, repeat=max_length):
+        li.append(''.join(i))
+    return li
 
-    # ECB
-    text = "\n--------------------------------------\n"
-    ciphertext_ecb = encrypt_ecb(key, data)
-    text += "ECB Base64:" + to_base64(ciphertext_ecb)
 
-    text += "\n"
+FILE_PATH = "text.txt"
+ORIGINAL_TEXT = read_file(FILE_PATH).upper() #Rendo la stringa in maiuscolo per facilitare la decrittazione
 
-    # Decrittazione ECB
-    decrypted_ecb = decrypt_ecb(key, ciphertext_ecb)
-    text += "ECB Decifrato:" + decrypted_ecb.decode()
+toRemove = [",", ":", ".", ";", "-", "_"]
 
-    text += "\n--------------------------------------\n"
-    
-    # CBC
-    iv, ciphertext_cbc = encrypt_cbc(key, data)
-    text += "CBC Base64:" + to_base64(iv + ciphertext_cbc)
+for char in toRemove:
+    ORIGINAL_TEXT = ORIGINAL_TEXT.replace(char, "") #Rimuovo tutte le occorrenze di ogni carattere per una migliore crittazione
 
-    text += "\n"
 
-    decrypted_cbc = decrypt_cbc(key, iv, ciphertext_cbc)
-    text += "CBC Decifrato:" + decrypted_cbc.decode()
+print("Initial text:\n", ORIGINAL_TEXT)
 
-    text += "\n--------------------------------------\n"
+KEY = generate_key()
+IV = generate_key()
 
-    file = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "scritto.txt"), "w")
-    file.write(text)
-    file.close()
+ENCRYPTED_TEXT_ECB = encrypt_ecb(ORIGINAL_TEXT, KEY)
+print("Encrypted file (ECB):\n", ENCRYPTED_TEXT_ECB)
 
-    
-    
+ENCRYPTED_TEXT_CBC = encrypt_cbc(ORIGINAL_TEXT, KEY, IV)
+print("Encrypted file (CBC):\n", ENCRYPTED_TEXT_CBC)
+
+DECRYPTED_TEXT_ECB = decrypt_ecb(ENCRYPTED_TEXT_ECB, KEY).decode()
+print("Decrypted file (ECB):\n", DECRYPTED_TEXT_ECB)
+
+DECRYPTED_TEXT_CBC = decrypt_cbc(ENCRYPTED_TEXT_CBC, KEY, IV).decode()
+print("Decrypted file (CBC):\n", DECRYPTED_TEXT_CBC)
+
+KEY_CHARACTERS = 32
+poss = generate_any_key(KEY_CHARACTERS)
+print(f"All key possbile{poss}")
